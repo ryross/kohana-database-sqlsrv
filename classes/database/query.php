@@ -61,12 +61,22 @@ class Database_Query extends Kohana_Database_Query {
 	 * @return  mixed    the insert id for INSERT queries
 	 * @return  integer  number of affected rows for all other queries
 	 */
-	public function execute($db = NULL)
+    public function execute($db = NULL, $as_object = NULL, $object_params = NULL)
 	{
 		if ( ! is_object($db))
 		{
 			// Get the database instance
 			$db = Database::instance($db);
+		}
+
+		if ($as_object === NULL)
+		{
+			$as_object = $this->_as_object;
+		}
+
+		if ($object_params === NULL)
+		{
+			$object_params = $this->_object_params;
 		}
 
 		// If the db is not a Sqlsrv database, use the parent method
@@ -84,20 +94,13 @@ class Database_Query extends Kohana_Database_Query {
 			if ($result = Kohana::cache($cache_key, NULL, $this->_lifetime))
 			{
 				// Return a cached result
-				return new Database_Result_Cached($result, $_rendered_sql, $this->_as_object, $this->_object_params);
+				return new Database_Result_Cached($result, $sql, $as_object, $object_params);
 			}
 		}
-
-		// Clean the params or create a NULL value
-		if (is_array($this->_object_params))
-			$params = array_values($this->_object_params);
-		else
-			$params = NULL;
-
 		// Execute the query
-		$result = $db->query($this->_type, $sql, $this->_as_object, $params);
+		$result = $db->query($this->_type, $sql, $as_object, $object_params);
 
-		if (isset($cache_key))
+		if (isset($cache_key) AND $this->_lifetime > 0)
 		{
 			// Cache the result array
 			Kohana::cache($cache_key, $result->as_array(), $this->_lifetime);
