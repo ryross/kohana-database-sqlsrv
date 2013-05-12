@@ -507,5 +507,19 @@ class Database_Sqlsrv_Core extends Database {
 		// SQL standard is to use single-quotes for all values
 		return "'$value'";
 	}
+	
+	public function begin($mode = NULL)
+	{
+			sqlsrv_begin_transaction($this->_connection);
+	}
 
+	public function commit()
+	{
+			sqlsrv_commit($this->_connection);
+	}
+
+	public function rollback()
+	{
+			sqlsrv_rollback($this->_connection);
+	}
 }
