@@ -81,7 +81,7 @@ class Database_Query extends Kohana_Database_Query {
 
 		// If the db is not a Sqlsrv database, use the parent method
 		if ( ! $db instanceof Database_Sqlsrv)
-			return parent::execute($db);
+			return parent::execute($db, $as_object, $object_params);
 
 		// Compile the SQL into a SQL Server Statement resource
 		$sql = $this->compile($db);
